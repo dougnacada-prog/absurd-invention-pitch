@@ -8,7 +8,15 @@ import { dirname } from "node:path";
 const entry = "A phone charger that unplugs itself and crawls under the bed whenever you reach for your phone after midnight, so your doomscrolling dies of battery starvation.";
 
 // Gate: one sentence, 1-220 characters, not only whitespace (mirrors the competition gate).
-if (entry.length < 1 || entry.length > 220 || !/\S/.test(entry)) {
+// Also reject leading/trailing whitespace and control characters, so a stray
+// space can never silently change the judged text.
+if (
+  entry.length < 1 ||
+  entry.length > 220 ||
+  !/\S/.test(entry) ||
+  entry !== entry.trim() ||
+  /[\u0000-\u001f\u007f]/.test(entry)
+) {
   throw new Error("entry must be 1-220 non-whitespace characters");
 }
 if ((entry.match(/[.!?]/g) ?? []).length !== 1 || !/[.!?]$/.test(entry)) {
